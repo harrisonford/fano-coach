@@ -4,14 +4,14 @@
 	import { userId } from '$lib/stores/user';
 	import { get } from 'svelte/store';
 
-	let theme = 'light';
+	let theme = 'dark';
 	let nameInput = '';
 	let savedToast = '';
 	let toastTimer;
 
 	onMount(() => {
 		const stored = localStorage.getItem('theme');
-		if (stored === 'dark' || stored === 'light') theme = stored;
+		if (stored === 'dark' || stored === 'light') theme = stored; else theme = 'dark';
 		applyTheme();
 		nameInput = get(userId) || '';
 	});
