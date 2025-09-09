@@ -1,0 +1,73 @@
+{
+  "pathways": [
+    {
+      "pathwayId": "morning-focus",
+      "title": "Rutina mañanera enfocada",
+      "description": "Establece una mañana simple para iniciar el día con intención.",
+      "steps": [
+        {
+          "id": "wake_time",
+          "question": "¿A qué hora te despiertas normalmente?",
+          "forwardCondition": "answer_provided"
+        },
+        {
+          "id": "first_action",
+          "question": "¿Cuál será tu primera acción de enfoque (p. ej., 10 respiraciones, 1 vaso de agua)?",
+          "forwardCondition": "answer_provided"
+        },
+        {
+          "id": "start_block",
+          "question": "Define tu primer bloque de 25 minutos: ¿qué tarea harás?",
+          "forwardCondition": "answer_provided"
+        }
+      ],
+      "endCondition": "Has definido tu hora de despertar, primera acción y primer bloque de trabajo."
+    },
+    {
+      "pathwayId": "stress-checkin",
+      "title": "Chequeo rápido de estrés",
+      "description": "Detecta tensiones y define un micro‑paso para bajar el estrés hoy.",
+      "steps": [
+        {
+          "id": "level",
+          "question": "En una escala del 1 al 10, ¿cómo está tu nivel de estrés ahora?",
+          "forwardCondition": "number_1_10"
+        },
+        {
+          "id": "source",
+          "question": "¿Qué es lo principal que te estresa?",
+          "forwardCondition": "answer_provided"
+        },
+        {
+          "id": "micro_step",
+          "question": "Define un micro‑paso de 5–10 minutos que puedes hacer hoy para aliviarlo.",
+          "forwardCondition": "answer_provided"
+        }
+      ],
+      "endCondition": "Has identificado nivel y fuente de estrés y un micro‑paso concreto para hoy."
+    },
+    {
+      "pathwayId": "intro-get-to-know",
+      "title": "Conociéndote rápido",
+      "description": "Un breve onboarding para entender tus metas y ritmo.",
+      "steps": [
+        {
+          "id": "goal",
+          "question": "¿Cuál es tu objetivo principal este mes? (máx. 1–2 frases)",
+          "forwardCondition": "answer_provided"
+        },
+        {
+          "id": "time_pref",
+          "question": "¿En qué momento del día te va mejor para enfocarte? (mañana / tarde / noche)",
+          "forwardCondition": "answer_provided"
+        },
+        {
+          "id": "first_microstep",
+          "question": "Propón un micro‑paso de 10 minutos que puedas hacer hoy hacia tu objetivo.",
+          "forwardCondition": "answer_provided"
+        }
+      ],
+      "endCondition": "Tenemos objetivo, preferencia horaria y un primer micro‑paso para hoy."
+    }
+  ]
+}
