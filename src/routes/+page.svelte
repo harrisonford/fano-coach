@@ -4,7 +4,7 @@
 	import { userId as userIdStore } from '$lib/stores/user';
 	import { get } from 'svelte/store';
 
-	/** @typedef {{ id: number; role: 'user'|'bot'; text: string }} ChatMessage */
+	/** @typedef {{ id: number; role: 'user'|'bot'; text: string, _loading?: boolean }} ChatMessage */
 	let messages = /** @type{ChatMessage[]} */ ([
 		{ id: 1, role: 'bot', text: 'Bienvenido a Fano Coaching. ¿En qué puedo ayudarte hoy?' }
 	]);
@@ -65,6 +65,21 @@
 		}
 	}
 
+	function addLoader(text) {
+		const id = nextId++;
+		messages = [...messages, { id, role: 'bot', text, _loading: true }];
+		return id;
+	}
+	function updateLoader(id, text) {
+		messages = messages.map(m => (m.id === id ? { ...m, text } : m));
+	}
+	function replaceLoader(id, finalText) {
+		messages = messages.map(m => (m.id === id ? { id, role: 'bot', text: finalText } : m));
+	}
+	function removeLoader(id) {
+		messages = messages.filter(m => m.id !== id);
+	}
+
 	async function send() {
 		const text = draft.trim();
 		const userId = (get(userIdStore) || '').trim();
@@ -73,19 +88,24 @@
 		draft = '';
 		loading = true;
 		errorText = '';
+		const loaderId = addLoader('Guardando progreso…');
 		try {
 			// First, persist to progress and get next question if available
 			const nextQ = await persistProgress(text, userId);
 			if (nextQ) {
-				messages = [...messages, { id: nextId++, role: 'bot', text: nextQ }];
+				replaceLoader(loaderId, nextQ);
 				loading = false;
 				return;
 			}
-			// Otherwise, fall back to model
+			updateLoader(loaderId, 'Consultando rutas…');
+			// Brief staged status while we await the LLM
+			const stageTimer = setTimeout(() => updateLoader(loaderId, 'Revisando tu historial…'), 500);
 			const reply = await callLLM(text, userId);
+			clearTimeout(stageTimer);
 			if (!reply || !reply.trim()) throw new Error('Sin contenido del modelo');
-			messages = [...messages, { id: nextId++, role: 'bot', text: reply }];
+			replaceLoader(loaderId, reply);
 		} catch (err) {
+			removeLoader(loaderId);
 			errorText = err?.message || String(err);
 		} finally {
 			loading = false;
@@ -124,6 +144,9 @@
 				{:else}
 					<div class="max-w-none whitespace-pre-wrap text-base leading-relaxed rounded-lg border border-[oklch(0.7_0.15_85)]/30 px-4 py-3 bg-white dark:bg-black shadow-[0_6px_24px_-8px_oklch(0.8_0.08_85/.35)]">
 						{m.text}
+						{#if m._loading}
+							<span class="inline-block ml-2 align-middle opacity-70 animate-pulse">…</span>
+						{/if}
 					</div>
 				{/if}
 			{/each}
